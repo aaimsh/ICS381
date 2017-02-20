@@ -134,6 +134,7 @@ def uniformCostSearch(problem):
 
     util.raiseNotDefined()
 
+
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -144,6 +145,17 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    fringe = util.PriorityQueue()
+    fringe.push((problem.getStartState(), [], 0+heuristic(problem.getStartState(), problem)), 0)
+    expanded = set()
+    while not fringe.isEmpty():
+        (node, path, cost) = fringe.pop()
+        if problem.isGoalState(node):
+            return path
+        expanded.add(node)
+        for childNode, childPath, childCost in problem.getSuccessors(node):
+            if not childNode in expanded:
+              fringe.push((childNode,path+[childPath],childCost+ heuristic(childNode, problem)), cost+childCost)
     util.raiseNotDefined()
 
 
