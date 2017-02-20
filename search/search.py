@@ -125,12 +125,12 @@ def uniformCostSearch(problem):
     expanded = set()
     while not fringe.isEmpty():
         (node, path, cost) = fringe.pop()
+        if problem.isGoalState(node):
+            return path
         expanded.add(node)
         for childNode, childPath, childCost in problem.getSuccessors(node):
             if not childNode in expanded:
-                if problem.isGoalState(childNode):
-                    return path + [childPath]
-                fringe.push((childNode,path+[childPath],childCost), cost+childCost)
+              fringe.push((childNode,path+[childPath],childCost), cost+childCost)
 
     util.raiseNotDefined()
 
