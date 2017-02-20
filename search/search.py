@@ -73,10 +73,7 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem):
-    n = Directions.NORTH
-    e = Directions.EAST
-    w = Directions.WEST
-    s = Directions.SOUTH
+
     """
     Search the deepest nodes in the search tree first.
 
@@ -91,45 +88,50 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    state = [problem.getStartState(),[], 0] #[node, path, cost]
-    if problem.isGoalState(state[0]):
-        return node[1]
     fringe = util.Stack()
-    fringe.push(state)
+    fringe.push((problem.getStartState(),[], 0))
     expanded = set()
     while not fringe.isEmpty():
         (node, path, cost) = fringe.pop()
         expanded.add(node)
         for childNode, childPath, childCost in problem.getSuccessors(node):
-            node = childNode
-            path += [childPath]
-            cost += childCost
-            newState = [node , path , cost]
-            if not node in expanded:
-                if problem.isGoalState(node):
-                    print path
-                    return path
-                fringe.push(newState)
-
-
-
-
-
-
+            if not childNode in expanded:
+                if problem.isGoalState(childNode):
+                    return path + [childPath]
+                fringe.push((childNode,path+[childPath], childCost))
 
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    fringe = util.Queue()
+    fringe.push((problem.getStartState(),[], 0))
+    expanded = set()
+    while not fringe.isEmpty():
+        (node, path, cost) = fringe.pop()
+        expanded.add(node)
+        for childNode, childPath, childCost in problem.getSuccessors(node):
+            if not childNode in expanded:
+                if problem.isGoalState(childNode):
+                    return path + [childPath]
+                fringe.push((childNode,path+[childPath], childCost))
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    fringe = util.PriorityQueue()
+    fringe.push((problem.getStartState(),[], 0),0)
+    expanded = set()
+    while not fringe.isEmpty():
+        (node, path, cost) = fringe.pop()
+        expanded.add(node)
+        for childNode, childPath, childCost in problem.getSuccessors(node):
+            if not childNode in expanded:
+                if problem.isGoalState(childNode):
+                    return path + [childPath]
+                fringe.push((childNode,path+[childPath],childCost), cost+childCost)
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
