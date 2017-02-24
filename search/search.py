@@ -93,6 +93,11 @@ def depthFirstSearch(problem):
 
     "*** starting node ***"
 
+    util.raiseNotDefined()
+
+def breadthFirstSearch(problem):
+    """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
     fringe = util.Stack()
     expanded = set()
     fringe.push((problem.getStartState(), [], 0))
@@ -104,17 +109,26 @@ def depthFirstSearch(problem):
             if childState not in expanded:
                 if problem.isGoalState(childState):
                     return path + [childPath]
-                fringe.push((childState, path+[childPath], cost))
-    util.raiseNotDefined()
-
-def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+                fringe.push((childState, path + [childPath], cost))
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    node = (problem.getStartState(), [], 0)
+    fringe = util.PriorityQueue()
+    fringe.push(node, node[2])
+    expanded = set()
+    while not fringe.isEmpty():
+        state, path, cost = fringe.pop()
+        if problem.isGoalState(state):
+            return path
+        expanded.add(state)
+        for childState, childPath, childCost in problem.getSuccessors(state):
+            if childState not in expanded:
+                fringe.push((childState,path+[childPath], cost), cost+childCost)
+
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
