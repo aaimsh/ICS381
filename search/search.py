@@ -87,42 +87,18 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    explored = set([])
+    explored = set()
     fringe = util.Stack()
     
-    # Push a plan with the initial state
-    for successor in problem.getSuccessors(problem.getStartState()):
-        fringe.push([successor])
-    while(not fringe.isEmpty()):
-        plan = fringe.pop()
-        state = plan[len(plan)-1][0] # read last state in this plan
-        explored.add(state)
-        if problem.isGoalState(state):
-            for i in range(len(plan)):
-                plan[i] = plan[i][1]
-            return plan
-        for successor in problem.getSuccessors(state):
-            if successor[0] not in explored: # state not in explored
-                fringe.push(plan + [successor])
-
-    print("Failed! depthFirstSearch")
-    return [] # Fail
-
-def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    fringe = util.Queue() # FIFO
-    explored = set([])
     # Initial State of the search problem
-    initialState = problem.getStartState()
-    fringe.push((initialState, '', 0)) # A tuple as (successor, actions, backwardCost)
+    root = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    fringe.push(root)
 
-    while(not fringe.isEmpty()):
+    while not fringe.isEmpty():
         state, actions, g = fringe.pop() # tuple(successor, actions, backwardCost)
 
         if problem.isGoalState(state):
-            # Convert 'actions' string to an array
-            actions = actions.strip().split()
+            # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             print('actions: ', actions)
             return actions
 
@@ -130,38 +106,65 @@ def breadthFirstSearch(problem):
         
         for successorState, action, stepCost in problem.getSuccessors(state):
             if successorState not in explored:
-                fringe.push((successorState, actions + action + ' ', 1))
+                successorNode = (successorState, actions+[action], 1)
+                fringe.push(successorNode)
 
-    print("Failed! breadthFirstSearch")
+    print("dfs Failed!")
+    return ['Stop'] # Fail
+
+def breadthFirstSearch(problem):
+    """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
+    fringe = util.Queue() # FIFO
+    explored = set()
+    # Initial State of the search problem
+    root = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    fringe.push(root)
+
+    while not fringe.isEmpty():
+        state, actions, g = fringe.pop() # tuple(successor, actions, backwardCost)
+
+        if problem.isGoalState(state):
+            # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
+            print('actions: ', actions)
+            return actions
+
+        explored.add(state)
+        
+        for successorState, action, stepCost in problem.getSuccessors(state):
+            if successorState not in explored:
+                successorNode = (successorState, actions+[action], 1)
+                fringe.push(successorNode)
+
+    print("bfs Failed!")
     return ['Stop'] # Fail
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     fringe = util.PriorityQueue() # FIFO
-    explored = set([])
+    explored = set()
     # Initial State of the search problem
-    initialState = problem.getStartState()
-    fringe.push((initialState, '', 0), 0) # A tuple as (successor, actions, backwardCost)
+    root = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    fringe.push(root, 0)
 
-    while(not fringe.isEmpty()):
+    while not fringe.isEmpty():
         state, actions, g = fringe.pop() # tuple(successor, actions, backwardCost)
         
         if problem.isGoalState(state):
-            # Convert 'actions' string to an array
-            actions = actions.strip().split()
+            # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             print('actions: ', actions)
-            print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             return actions
 
         explored.add(state)
         
         for successorState, action, stepCost in problem.getSuccessors(state):
             if successorState not in explored:
-                fringe.push((successorState, actions + action + ' ', g + stepCost), g + stepCost)
+                successorNode = (successorState, actions+[action], g + stepCost)
+                fringe.push(successorNode, g + stepCost)
 
-    print("Failed! uniformCostSearch")
-    return [''] # Fail
+    print("ucs Failed!")
+    return ['Stop'] # Fail
 
 def nullHeuristic(state, problem=None):
     """
@@ -174,31 +177,31 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     fringe = util.PriorityQueue() # FIFO
-    explored = set([])
+    explored = set()
     # Initial State of the search problem
     initialState = problem.getStartState()
+    root = (initialState, [], 0) # A tuple as (successor, actions, backwardCost)
     h = heuristic(initialState, problem)
-    fringe.push((initialState, '', 0), h) # A tuple as (successor, actions, backwardCost)
+    fringe.push(root, h) # A tuple as (successor, actions, backwardCost)
 
-    while(not fringe.isEmpty()):
+    while not fringe.isEmpty():
         state, actions, g = fringe.pop() # tuple(successor, actions, backwardCost)
         
         if problem.isGoalState(state):
-            # Convert 'actions' string to an array
-            actions = actions.strip().split()
+            # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             print('actions: ', actions)
-            print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             return actions
 
         explored.add(state)
         
         for successorState, action, stepCost in problem.getSuccessors(state):
             if successorState not in explored:
+                successorNode = (successorState, actions+[action], g + stepCost)
                 h = heuristic(state, problem)
-                fringe.push((successorState, actions + action + ' ', g + stepCost), g + stepCost + h)
+                fringe.push(successorNode, h + g + stepCost)
 
-    print("Failed! A*")
-    return [''] # Fail
+    print("A* Failed!")
+    return ['Stop'] # Fail
 
 
 # Abbreviations
