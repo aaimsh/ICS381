@@ -332,7 +332,7 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
             
-            print(corners)
+            # print(corners)
 
             cornersList = list(corners)
             i = 0

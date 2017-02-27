@@ -99,7 +99,7 @@ def depthFirstSearch(problem):
 
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
-            print('actions: ', actions)
+            # print('actions: ', actions)
             return actions
 
         explored.add(state)
@@ -126,13 +126,13 @@ def breadthFirstSearch(problem):
 
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
-            print('actions: ', actions)
+            # print('actions: ', actions)
             return actions
 
         explored.add(state)
         
         for successorState, action, stepCost in problem.getSuccessors(state):
-            if successorState not in explored:
+            if successorState not in explored and successorState not in [x[0] for x in fringe.list]:
                 successorNode = (successorState, actions+[action], 1)
                 fringe.push(successorNode)
 
@@ -153,15 +153,32 @@ def uniformCostSearch(problem):
         
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
-            print('actions: ', actions)
+            # print('actions: ', actions)
             return actions
 
         explored.add(state)
         
         for successorState, action, stepCost in problem.getSuccessors(state):
-            if successorState not in explored:
-                successorNode = (successorState, actions+[action], g + stepCost)
+            successorNode = (successorState, actions+[action], g + stepCost)
+            if successorState not in explored and successorState not in [x[0] for x in fringe.heap]:
                 fringe.push(successorNode, g + stepCost)
+                # print("IF")
+            else:
+                sharedState = [x for x in fringe.heap if x[0] == successorState]
+                print("ELSE", sharedState)
+                if len(sharedState) != 0 and sharedState[0][2] > g + stepCost:
+                    print("ELSE IF", sharedState)
+                    fringe.heap.pop(sharedState[0])
+                    fringe.push(successorNode, g + stepCost)
+
+            # elif successorState in [x[0] for x in fringe.heap] and fringe.heap.index([x[0] for x in fringe.heap].index(successorState))[2] > g + stepCost:
+                # TODO: delete the node and replace it
+
+                
+
+
+
+            
 
     print("ucs Failed!")
     return ['Stop'] # Fail
@@ -189,13 +206,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
-            print('actions: ', actions)
+            # print('actions: ', actions)
             return actions
 
         explored.add(state)
         
         for successorState, action, stepCost in problem.getSuccessors(state):
-            if successorState not in explored:
+            if successorState not in explored and successorState not in [x[0] for x in fringe.heap]:
                 successorNode = (successorState, actions+[action], g + stepCost)
                 h = heuristic(state, problem)
                 fringe.push(successorNode, h + g + stepCost)
