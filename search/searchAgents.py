@@ -385,14 +385,16 @@ def cornersHeuristic(state, problem):
     import math
     x1,y1 = state[0]
     myCorners = state[1]
-    distance = 0
+    distance = 999999999
     if len(myCorners) > 0:
         for x2, y2 in myCorners:
             # Manhattan Distance
-            distance = max(distance, abs(x1 - x2) + abs(y1 - y2))
+            distance = min(distance, abs(x1 - x2) + abs(y1 - y2))
 
+    # Pacman will at least move a Euclidean distance to nearest corner 4 times
+    # i.e, the number of corners there are: 4
     h = len(myCorners) * distance
-    return h # Default to trivial solution
+    return h
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
