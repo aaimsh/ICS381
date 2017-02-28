@@ -382,18 +382,31 @@ def cornersHeuristic(state, problem):
 
     "*** YOUR CODE HERE ***"
     # Distance to nearest corner
+    # Pacman will at least move a Manhattan distance between all pairs of closest
+    # food pallets.
     import math
-    x1,y1 = state[0]
     myCorners = state[1]
-    distance = 999999999
+    # sumOfDistances = 0
+    # if len(myCorners) > 1:
+    #     for x1, y1 in myCorners:
+    #         d = 9999999
+    #         for x2, y2 in myCorners:
+    #             # Manhattan Distance
+    #             if x1 != x2 and y1 != y2:
+    #                 d = min(d, abs(x1 - x2) + abs(y1 - y2))
+    #         sumOfDistances += d
+    
+    # sumOfDistances = sumOfDistances/2
+    # print(sumOfDistances)
+    
+    m = 9999999
+    x1,y1 = state[0]
     if len(myCorners) > 0:
         for x2, y2 in myCorners:
-            # Manhattan Distance
-            distance = min(distance, abs(x1 - x2) + abs(y1 - y2))
+            m = min(m, abs(x1 - x2) + abs(y1 - y2))
 
-    # Pacman will at least move a Euclidean distance to nearest corner 4 times
-    # i.e, the number of corners there are: 4
-    h = len(myCorners) * distance
+
+    h = m * len(myCorners)
     return h
 
 class AStarCornersAgent(SearchAgent):
