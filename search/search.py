@@ -87,27 +87,26 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    explored = set()
-    fringe = util.Stack()
-    
+    frontier = util.Stack()
+    expanded = set()
     # Initial State of the search problem
-    root = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
-    fringe.push(root)
+    rootNode = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    frontier.push(rootNode)
 
-    while not fringe.isEmpty():
-        state, actions, g = fringe.pop() # tuple(successor, actions, backwardCost)
+    while not frontier.isEmpty():
+        state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
 
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             # print('actions: ', actions)
             return actions
 
-        explored.add(state)
+        expanded.add(state)
         
-        for successorState, action, stepCost in problem.getSuccessors(state):
-            if successorState not in explored:
-                successorNode = (successorState, actions+[action], 1)
-                fringe.push(successorNode)
+        for childState, action, stepCost in problem.getSuccessors(state):
+            if childState not in expanded:
+                node = (childState, actions+[action], g + stepCost)
+                frontier.push(node)
 
     print("dfs Failed!")
     return ['Stop'] # Fail
@@ -115,26 +114,26 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    fringe = util.Queue() # FIFO
-    explored = set()
+    frontier = util.Queue() # FIFO
+    expanded = set()
     # Initial State of the search problem
-    root = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
-    fringe.push(root)
+    rootNode = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    frontier.push(rootNode)
 
-    while not fringe.isEmpty():
-        state, actions, g = fringe.pop() # tuple(successor, actions, backwardCost)
+    while not frontier.isEmpty():
+        state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
 
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             # print('actions: ', actions)
             return actions
 
-        explored.add(state)
+        expanded.add(state)
         
-        for successorState, action, stepCost in problem.getSuccessors(state):
-            if successorState not in explored and successorState not in [x[0] for x in fringe.list]:
-                successorNode = (successorState, actions+[action], 1)
-                fringe.push(successorNode)
+        for childState, action, stepCost in problem.getSuccessors(state):
+            node = (childState, actions+[action], g + stepCost)
+            if childState not in expanded and childState not in [x[0] for x in frontier.list]:
+                frontier.push(node)
 
     print("bfs Failed!")
     return ['Stop'] # Fail
@@ -142,43 +141,35 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    fringe = util.PriorityQueue() # FIFO
-    explored = set()
+    frontier = util.PriorityQueue() # FIFO
+    expanded = set()
     # Initial State of the search problem
-    root = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
-    fringe.push(root, 0)
+    rootNode = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    frontier.push(rootNode, 0)
 
-    while not fringe.isEmpty():
-        state, actions, g = fringe.pop() # tuple(successor, actions, backwardCost)
-        
+    while not frontier.isEmpty():
+        state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
+
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             # print('actions: ', actions)
             return actions
 
-        explored.add(state)
+        expanded.add(state)
         
-        for successorState, action, stepCost in problem.getSuccessors(state):
-            successorNode = (successorState, actions+[action], g + stepCost)
-            if successorState not in explored and successorState not in [x[0] for x in fringe.heap]:
-                fringe.push(successorNode, g + stepCost)
-                # print("IF")
-            else:
-                sharedState = [x for x in fringe.heap if x[0] == successorState]
-                print("ELSE", sharedState)
-                if len(sharedState) != 0 and sharedState[0][2] > g + stepCost:
-                    print("ELSE IF", sharedState)
-                    fringe.heap.pop(sharedState[0])
-                    fringe.push(successorNode, g + stepCost)
-
-            # elif successorState in [x[0] for x in fringe.heap] and fringe.heap.index([x[0] for x in fringe.heap].index(successorState))[2] > g + stepCost:
-                # TODO: delete the node and replace it
-
-                
-
-
-
-            
+        for childState, action, stepCost in problem.getSuccessors(state):
+            node = (childState, actions+[action], g + stepCost)
+            if childState not in expanded and not childState in [x[0] for x in frontier.heap]:
+                frontier.push(node, g + stepCost)
+            elif childState in [x[0] for x in frontier.heap]:
+                i = 0
+                for cost in [x[2] for x in frontier.heap]:
+                    if g + stepCost < cost:
+                        print("lower ################################################## lower")
+                        frontier.pop(i)
+                        frontier.push(node, g + stepCost)
+                        break;
+                    i += 1
 
     print("ucs Failed!")
     return ['Stop'] # Fail
@@ -193,29 +184,34 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    fringe = util.PriorityQueue() # FIFO
-    explored = set()
+    frontier = util.PriorityQueue() # FIFO
+    expanded = set()
     # Initial State of the search problem
-    initialState = problem.getStartState()
-    root = (initialState, [], 0) # A tuple as (successor, actions, backwardCost)
-    h = heuristic(initialState, problem)
-    fringe.push(root, h) # A tuple as (successor, actions, backwardCost)
+    frontier.push((problem.getStartState(), [], 0), heuristic(problem.getStartState(), problem))
 
-    while not fringe.isEmpty():
-        state, actions, g = fringe.pop() # tuple(successor, actions, backwardCost)
-        
+    while not frontier.isEmpty():
+        state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
+
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             # print('actions: ', actions)
             return actions
 
-        explored.add(state)
+        expanded.add(state)
         
-        for successorState, action, stepCost in problem.getSuccessors(state):
-            if successorState not in explored and successorState not in [x[0] for x in fringe.heap]:
-                successorNode = (successorState, actions+[action], g + stepCost)
-                h = heuristic(state, problem)
-                fringe.push(successorNode, h + g + stepCost)
+        for childState, action, stepCost in problem.getSuccessors(state):
+            node = (childState, actions+[action], g + stepCost)
+            h = heuristic(childState, problem)
+            if childState not in expanded and not childState in [x[0] for x in frontier.heap]:
+                frontier.push(node, h + g + stepCost)
+            elif childState in [x[0] for x in frontier.heap]:
+                i = 0
+                for cost in [x[2] for x in frontier.heap]:
+                    if g + stepCost < cost:
+                        frontier.pop(i)
+                        frontier.push(node, h + g + stepCost)
+                        break;
+                    i += 1
 
     print("A* Failed!")
     return ['Stop'] # Fail
