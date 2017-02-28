@@ -399,14 +399,14 @@ def cornersHeuristic(state, problem):
     # sumOfDistances = sumOfDistances/2
     # print(sumOfDistances)
     
-    m = 9999999
+    distanceToFarthestCorner = 0
     x1,y1 = state[0]
     if len(myCorners) > 0:
         for x2, y2 in myCorners:
-            m = min(m, abs(x1 - x2) + abs(y1 - y2))
+            distanceToFarthestCorner = max(distanceToFarthestCorner, abs(x1 - x2) + abs(y1 - y2))
 
 
-    h = m * len(myCorners)
+    h = distanceToFarthestCorner 
     return h
 
 class AStarCornersAgent(SearchAgent):
@@ -501,7 +501,50 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    # Distance to nearest corner
+    # Pacman will at least move a Manhattan distance between all pairs of closest
+    # food pallets.
+    import math
+    foodList = foodGrid.asList()
+
+
+    # Abdulmajeed Secret Code
+    # distanceToFarthestFoodPallet = 0
+    # x1,y1 = position
+    # if len(foodList) > 0:
+    #     for x2, y2 in foodList:
+    #         distanceToFarthestFoodPallet = max(distanceToFarthestFoodPallet, abs(x1 - x2) + abs(y1 - y2))
+    # if distanceToFarthestFoodPallet == 0:
+    #     return distanceToFarthestFoodPallet
+    # #h = pairsDistanceSum
+    # h = distanceToFarthestFoodPallet + ((len(foodList) - 1)/distanceToFarthestFoodPallet)
+
+    pairsDistanceSum = 0
+    maxDistance = 0
+    if len(foodList) == 1:
+        x1,y1 = position
+        x2,y2 = foodList[0]
+        return abs(x1 - x2) + abs(y1 - y2)
+    for x1,y1 in foodList:
+        for x2,y2 in foodList:
+            if x1 != x2 and y1 != y2:
+                maxDistance = min(maxDistance, abs(x1 - x2) + abs(y1 - y2))
+        pairsDistanceSum += maxDistance
+
+    distanceToFarthestFoodPallet = 0
+    x1,y1 = position
+    if len(foodList) > 0:
+        for x2, y2 in foodList:
+            distanceToFarthestFoodPallet = max(distanceToFarthestFoodPallet, abs(x1 - x2) + abs(y1 - y2))
+
+    distanceToNearestFoodPallet = 9999999
+    x1,y1 = position
+    for x2,y2 in foodList:
+        distanceToNearestFoodPallet = min(distanceToFarthestFoodPallet, abs(x1 - x2) + abs(y1 - y2))
+
+    h = max(min(pairsDistanceSum, distanceToNearestFoodPallet), distanceToFarthestFoodPallet)
+
+    return h
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -530,9 +573,20 @@ class ClosestDotSearchAgent(SearchAgent):
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
-
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        print(startPosition)
+        print(food)
+        print(walls)
+        print(problem)
+        # x1,y1 = startPosition
+        # minDistance = 9999999
+        # foodList = food.asList()
+        # print(foodList)
+        # for x2,y2 in foodList:
+        #     minDistance = min(minDistance, abs(x1 - x2) + abs(y1 - y2))
+
+        # h = minDistance
+        return 0
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -568,7 +622,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # If all grid is FALSE
 
 def mazeDistance(point1, point2, gameState):
     """

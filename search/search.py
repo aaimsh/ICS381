@@ -150,6 +150,9 @@ def uniformCostSearch(problem):
     while not frontier.isEmpty():
         state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
 
+        if state in expanded:
+            continue
+
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
             # print('actions: ', actions)
@@ -191,6 +194,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     while not frontier.isEmpty():
         state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
+
+        if state in expanded:
+            continue
 
         if problem.isGoalState(state):
             # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
