@@ -159,7 +159,7 @@ def uniformCostSearch(problem):
         
         for childState, action, stepCost in problem.getSuccessors(state):
             node = (childState, actions+[action], g + stepCost)
-            if childState not in expanded and not childState in [x[0] for x in frontier.heap]:
+            if childState not in expanded and childState not in [x[0] for x in frontier.heap]:
                 frontier.push(node, g + stepCost)
             elif childState in [x[0] for x in frontier.heap]:
                 i = 0
@@ -202,7 +202,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         for childState, action, stepCost in problem.getSuccessors(state):
             node = (childState, actions+[action], g + stepCost)
             h = heuristic(childState, problem)
-            if childState not in expanded and not childState in [x[0] for x in frontier.heap]:
+            if childState not in expanded and childState not in [x[0] for x in frontier.heap]:
                 frontier.push(node, h + g + stepCost)
             elif childState in [x[0] for x in frontier.heap]:
                 i = 0
