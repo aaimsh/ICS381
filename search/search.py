@@ -90,15 +90,13 @@ def depthFirstSearch(problem):
     frontier = util.Stack()
     expanded = set()
     # Initial State of the search problem
-    rootNode = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    rootNode = (problem.getStartState(), [], 0) # A triple as (successor, actions, backwardCost)
     frontier.push(rootNode)
 
     while not frontier.isEmpty():
-        state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
+        state, actions, g = frontier.pop() # triple(successor, actions, backwardCost)
 
         if problem.isGoalState(state):
-            # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
-            # print('actions: ', actions)
             return actions
 
         expanded.add(state)
@@ -117,15 +115,13 @@ def breadthFirstSearch(problem):
     frontier = util.Queue() # FIFO
     expanded = set()
     # Initial State of the search problem
-    rootNode = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    rootNode = (problem.getStartState(), [], 0) # A triple as (successor, actions, backwardCost)
     frontier.push(rootNode)
 
     while not frontier.isEmpty():
-        state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
+        state, actions, g = frontier.pop() # triple(successor, actions, backwardCost)
 
         if problem.isGoalState(state):
-            # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
-            # print('actions: ', actions)
             return actions
 
         expanded.add(state)
@@ -141,34 +137,32 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    frontier = util.PriorityQueue() # FIFO
+    frontier = util.PriorityQueue()
     expanded = set()
     # Initial State of the search problem
-    rootNode = (problem.getStartState(), [], 0) # A tuple as (successor, actions, backwardCost)
+    rootNode = (problem.getStartState(), [], 0) # A triple as (successor, actions, backwardCost)
     frontier.push(rootNode, 0)
 
     while not frontier.isEmpty():
-        state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
-
+        state, actions, g = frontier.pop() # triple(successor, actions, backwardCost)
+        
         if state in expanded:
             continue
 
         if problem.isGoalState(state):
-            # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
-            # print('actions: ', actions)
             return actions
-
         expanded.add(state)
-        
+
         for childState, action, stepCost in problem.getSuccessors(state):
             node = (childState, actions+[action], g + stepCost)
             if childState not in expanded and childState not in [x[0] for x in frontier.heap]:
                 frontier.push(node, g + stepCost)
             elif childState in [x[0] for x in frontier.heap]:
+                # if childState is already in frontier, we see if childState has better
+                # cost than the one in the frontier and replace it.
                 i = 0
                 for cost in [x[2] for x in frontier.heap]:
                     if g + stepCost < cost:
-                        print("lower ################################################## lower")
                         frontier.pop(i)
                         frontier.push(node, g + stepCost)
                         break;
@@ -187,20 +181,18 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    frontier = util.PriorityQueue() # FIFO
+    frontier = util.PriorityQueue()
     expanded = set()
     # Initial State of the search problem
     frontier.push((problem.getStartState(), [], 0), heuristic(problem.getStartState(), problem))
 
     while not frontier.isEmpty():
-        state, actions, g = frontier.pop() # tuple(successor, actions, backwardCost)
+        state, actions, g = frontier.pop() # triple(successor, actions, backwardCost)
 
         if state in expanded:
             continue
 
         if problem.isGoalState(state):
-            # print ('Commulative Cost: '+ str(g) +'=='+ str(problem.getCostOfActions(actions)), g == problem.getCostOfActions(actions))
-            # print('actions: ', actions)
             return actions
 
         expanded.add(state)
@@ -211,6 +203,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             if childState not in expanded and childState not in [x[0] for x in frontier.heap]:
                 frontier.push(node, h + g + stepCost)
             elif childState in [x[0] for x in frontier.heap]:
+                # if childState is already in frontier, we see if childState has better
+                # cost than the one in the frontier and replace it.
                 i = 0
                 for cost in [x[2] for x in frontier.heap]:
                     if g + stepCost < cost:
