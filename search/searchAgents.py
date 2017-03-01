@@ -495,18 +495,27 @@ def foodHeuristic(state, problem):
         return mazeDistance((x1,y1), (x2,y2), problem.startingGameState)
 
     # Find "nearest" food pallet in the relaxed problem, ignoring walls
-    minDistance = 999999
-    nearestFoodPallet = (0,0)
+    # minDistance = 999999
+    # nearestFoodPallet = (0,0)
+    # x1,y1 = position
+    # for x2,y2 in foodList:
+    #     manhattan = abs(x1 - x2) + abs(y1 - y2)
+    #     if manhattan < minDistance:
+    #         minDistance = manhattan
+    #         nearestFoodPallet = (x2,y2)
+
+    maxDistance = 0
+    farthestFoodPallet = (0,0)
     x1,y1 = position
     for x2,y2 in foodList:
-        manhattan = abs(x1 - x2) + abs(y1 - y2)
-        if manhattan < minDistance:
-            minDistance = manhattan
-            nearestFoodPallet = (x2,y2)
+        actual = mazeDistance((x1,y1), (x2,y2), problem.startingGameState)
+        if actual > maxDistance:
+            maxDistance = actual
+            farthestFoodPallet = (x2,y2)
     
     # h1 = max(sumOfDistancesBetweenClosestPairs, distanceToFarthestFoodPallet)
     # Actual distance to "nearest" food pallet
-    h = mazeDistance( (x1,y1), nearestFoodPallet, problem.startingGameState )
+    h = mazeDistance( (x1,y1), farthestFoodPallet, problem.startingGameState )
 
     return h
 
@@ -541,14 +550,14 @@ class ClosestDotSearchAgent(SearchAgent):
         x1,y1 = startPosition
         minDistance = 9999999
         foodList = food.asList()
-        nearestFoodPalletCoordinates = (0,0)
+        nearestFoodPallet = (0,0)
         for x2,y2 in foodList:
             if abs(x1 - x2) + abs(y1 - y2) < minDistance:
                 minDistance = abs(x1 - x2) + abs(y1 - y2)
-                nearestFoodPalletCoordinates = (x2,y2)
+                nearestFoodPallet = (x2,y2)
 
         start = startPosition
-        goal = nearestFoodPalletCoordinates
+        goal = nearestFoodPallet
         prob = PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False)
         return search.bfs(prob)
 
