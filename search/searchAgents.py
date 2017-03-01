@@ -494,16 +494,6 @@ def foodHeuristic(state, problem):
         x2,y2 = foodList[0]
         return mazeDistance((x1,y1), (x2,y2), problem.startingGameState)
 
-    # Find "nearest" food pallet in the relaxed problem, ignoring walls
-    # minDistance = 999999
-    # nearestFoodPallet = (0,0)
-    # x1,y1 = position
-    # for x2,y2 in foodList:
-    #     manhattan = abs(x1 - x2) + abs(y1 - y2)
-    #     if manhattan < minDistance:
-    #         minDistance = manhattan
-    #         nearestFoodPallet = (x2,y2)
-
     maxDistance = 0
     farthestFoodPallet = (0,0)
     x1,y1 = position
@@ -514,7 +504,7 @@ def foodHeuristic(state, problem):
             farthestFoodPallet = (x2,y2)
     
     # h1 = max(sumOfDistancesBetweenClosestPairs, distanceToFarthestFoodPallet)
-    # Actual distance to "nearest" food pallet
+    # Actual distance to farthest food pallet
     h = mazeDistance( (x1,y1), farthestFoodPallet, problem.startingGameState )
 
     return h
