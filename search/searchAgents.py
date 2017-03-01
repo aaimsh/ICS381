@@ -501,13 +501,56 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    # Distance to nearest corner
-    # Pacman will at least move a Manhattan distance between all pairs of closest
-    # food pallets.
     import math
     foodList = foodGrid.asList()
+    # sumOfDistancesBetweenClosestPairs = 0
+    # minDistance = 0
+    
+    # for x1,y1 in foodList:
+    #     for x2,y2 in foodList:
+    #         if x1 != x2 and y1 != y2:
+    #             minDistance = min(minDistance, abs(x1 - x2) + abs(y1 - y2))
+    #     sumOfDistancesBetweenClosestPairs += minDistance
 
+    # distanceToFarthestFoodPallet = 0
+    # x1,y1 = position
+    # if len(foodList) > 0:
+    #     for x2, y2 in foodList:
+    #         distanceToFarthestFoodPallet = max(distanceToFarthestFoodPallet, abs(x1 - x2) + abs(y1 - y2))
 
+    if len(foodList) == 0:
+        return len(foodList)
+
+    if len(foodList) == 1:
+        x1,y1 = position
+        x2,y2 = foodList[0]
+        # return abs(x1 - x2) + abs(y1 - y2)
+        return mazeDistance((x1,y1), (x2,y2), problem.startingGameState)
+
+    # maxDistance = 0
+    # farthestFoodPalletCoordinates = (0,0)
+    # x1,y1 = position
+    # for x2,y2 in foodList:
+    #     # d = mazeDistance((x1,y1), (x2,y2), problem.startingGameState)
+    #     d = abs(x1 - x2) + abs(y1 - y2)
+    #     if d > maxDistance:
+    #         maxDistance = d
+    #         farthestFoodPalletCoordinates = (x2,y2)
+
+    maxDistance = 999999
+    farthestFoodPalletCoordinates = (0,0)
+    x1,y1 = position
+    for x2,y2 in foodList:
+        # d = mazeDistance((x1,y1), (x2,y2), problem.startingGameState)
+        d = abs(x1 - x2) + abs(y1 - y2)
+        if d < maxDistance:
+            maxDistance = d
+            farthestFoodPalletCoordinates = (x2,y2)
+    
+    # h = max(sumOfDistancesBetweenClosestPairs, distanceToFarthestFoodPallet)
+    h = mazeDistance((x1,y1),farthestFoodPalletCoordinates, problem.startingGameState)
+
+    return h
     # Abdulmajeed Secret Code
     # distanceToFarthestFoodPallet = 0
     # x1,y1 = position
@@ -516,35 +559,13 @@ def foodHeuristic(state, problem):
     #         distanceToFarthestFoodPallet = max(distanceToFarthestFoodPallet, abs(x1 - x2) + abs(y1 - y2))
     # if distanceToFarthestFoodPallet == 0:
     #     return distanceToFarthestFoodPallet
-    # #h = pairsDistanceSum
+    # #h = sumOfDistancesBetweenClosestPairs
     # h = distanceToFarthestFoodPallet + ((len(foodList) - 1)/distanceToFarthestFoodPallet)
 
-    pairsDistanceSum = 0
-    maxDistance = 0
-    if len(foodList) == 1:
-        x1,y1 = position
-        x2,y2 = foodList[0]
-        return abs(x1 - x2) + abs(y1 - y2)
-    for x1,y1 in foodList:
-        for x2,y2 in foodList:
-            if x1 != x2 and y1 != y2:
-                maxDistance = min(maxDistance, abs(x1 - x2) + abs(y1 - y2))
-        pairsDistanceSum += maxDistance
-
-    distanceToFarthestFoodPallet = 0
-    x1,y1 = position
-    if len(foodList) > 0:
-        for x2, y2 in foodList:
-            distanceToFarthestFoodPallet = max(distanceToFarthestFoodPallet, abs(x1 - x2) + abs(y1 - y2))
-
-    distanceToNearestFoodPallet = 9999999
-    x1,y1 = position
-    for x2,y2 in foodList:
-        distanceToNearestFoodPallet = min(distanceToFarthestFoodPallet, abs(x1 - x2) + abs(y1 - y2))
-
-    h = max(min(pairsDistanceSum, distanceToNearestFoodPallet), distanceToFarthestFoodPallet)
-
-    return h
+    # distanceToNearestFoodPallet = 9999999
+    # x1,y1 = position
+    # for x2,y2 in foodList:
+    #     distanceToNearestFoodPallet = min(distanceToFarthestFoodPallet, abs(x1 - x2) + abs(y1 - y2))
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -574,19 +595,19 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
         "*** YOUR CODE HERE ***"
-        print(startPosition)
-        print(food)
-        print(walls)
-        print(problem)
-        # x1,y1 = startPosition
-        # minDistance = 9999999
-        # foodList = food.asList()
-        # print(foodList)
-        # for x2,y2 in foodList:
-        #     minDistance = min(minDistance, abs(x1 - x2) + abs(y1 - y2))
+        x1,y1 = startPosition
+        minDistance = 9999999
+        foodList = food.asList()
+        nearestFoodPalletCoordinates = (0,0)
+        for x2,y2 in foodList:
+            if abs(x1 - x2) + abs(y1 - y2) < minDistance:
+                minDistance = abs(x1 - x2) + abs(y1 - y2)
+                nearestFoodPalletCoordinates = (x2,y2)
 
-        # h = minDistance
-        return 0
+        start = startPosition
+        goal = nearestFoodPalletCoordinates
+        prob = PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False)
+        return search.bfs(prob)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -622,7 +643,10 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        # If all grid is FALSE
+        if (x,y) in self.food.asList():
+            return True
+        return False
+
 
 def mazeDistance(point1, point2, gameState):
     """
