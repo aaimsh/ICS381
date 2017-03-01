@@ -505,7 +505,7 @@ def foodHeuristic(state, problem):
             nearestFoodPallet = (x2,y2)
     
     # h1 = max(sumOfDistancesBetweenClosestPairs, distanceToFarthestFoodPallet)
-    # Actual distance to farthest food pallet
+    # Actual distance to nearest food pallet
     h = mazeDistance( (x1,y1), nearestFoodPallet, problem.startingGameState )
 
     return h
