@@ -547,19 +547,7 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
         "*** YOUR CODE HERE ***"
-        x1,y1 = startPosition
-        minDistance = 9999999
-        foodList = food.asList()
-        nearestFoodPallet = (0,0)
-        for x2,y2 in foodList:
-            if abs(x1 - x2) + abs(y1 - y2) < minDistance:
-                minDistance = abs(x1 - x2) + abs(y1 - y2)
-                nearestFoodPallet = (x2,y2)
-
-        start = startPosition
-        goal = nearestFoodPallet
-        prob = PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False)
-        return search.bfs(prob)
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
