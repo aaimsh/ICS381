@@ -390,7 +390,6 @@ def cornersHeuristic(state, problem):
         for x2, y2 in myCorners:
             distanceToFarthestCorner = max(distanceToFarthestCorner, abs(x1 - x2) + abs(y1 - y2))
 
-    # Distance to farthest corner
     h = distanceToFarthestCorner 
     return h
 
@@ -495,6 +494,7 @@ def foodHeuristic(state, problem):
         x2,y2 = foodList[0]
         return mazeDistance((x1,y1), (x2,y2), problem.startingGameState)
 
+    # Find "nearest" food pallet in the relaxed problem, ignoring walls
     minDistance = 999999
     nearestFoodPallet = (0,0)
     x1,y1 = position
@@ -505,7 +505,7 @@ def foodHeuristic(state, problem):
             nearestFoodPallet = (x2,y2)
     
     # h1 = max(sumOfDistancesBetweenClosestPairs, distanceToFarthestFoodPallet)
-    # Actual distance to nearest food pallet
+    # Actual distance to "nearest" food pallet
     h = mazeDistance( (x1,y1), nearestFoodPallet, problem.startingGameState )
 
     return h
