@@ -15,10 +15,11 @@
 from util import manhattanDistance
 from game import Directions
 import random, util
-
+from game import Grid
 from game import Agent
-
+foodList = []
 class ReflexAgent(Agent):
+    foodList = []
     """
       A reflex agent chooses an action at each choice point by examining
       its alternatives via a state evaluation function.
@@ -27,8 +28,6 @@ class ReflexAgent(Agent):
       it in any way you see fit, so long as you don't touch our method
       headers.
     """
-
-
     def getAction(self, gameState):
         """
         You do not need to change this method, but you're welcome to.
@@ -39,14 +38,25 @@ class ReflexAgent(Agent):
         some Directions.X for some X in the set {North, South, West, East, Stop}
         """
         # Collect legal moves and successor states
+        foodList = []
+        currentFood = gameState.getFood()
         legalMoves = gameState.getLegalActions()
+        #print directions
+        """for x in range(0,5):
+            for y in range(0, 10):
+                if currentFood[x][y] == True:
+                    foodPosition = (x,y)
+                    print "food Position:", foodPosition
+                    foodList.append(foodPosition)"""
 
+        #print foodList
         # Choose one of the best actions
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
         bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
+        #print "bestIndices:", bestIndices
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
-
+        #print "best Index:", chosenIndex
         "Add more of your code here if you want to"
 
         return legalMoves[chosenIndex]
@@ -72,8 +82,34 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
-        return successorGameState.getScore()
+        ghostPosition = successorGameState.getGhostPositions()
+        """print "new Position:", newPos
+        print "new Food:", newFood
+        print "new Ghost States:", newGhostStates
+        print "new Scared Times:", newScaredTimes
+        print "ghost Position:", ghostPosition
+        #print "food Position:", foodList"""
+        "*** YOUR CODE HERE ***"
+        #print "+++++++++++++++++++++++++++++"
+        #print foodList
+        currentGameState.getScore()
+        #print "Score:", currentGameState.getScore()
+        #print "To Food:", manhattanDistance(newPos,foodList[0])
+        #print "To Ghost:", manhattanDistance(newPos,ghostPosition[0])
+        #print foodList
+        foodList = currentGameState.getFood().asList()
+        if len(foodList) != 0:
+            maxScore = - 2.5 * manhattanDistance(newPos,foodList[0]) +  2 * manhattanDistance(newPos,ghostPosition[0]) + 1.5 * manhattanDistance(foodList[0],ghostPosition[0])
+            for i in range(1,len(foodList)):
+                tmpScore = - 2.5 * manhattanDistance(newPos,foodList[i]) + 2 * manhattanDistance(newPos,ghostPosition[0]) + 1.5 * manhattanDistance(foodList[i],ghostPosition[0])
+                #print "tmp:", tmpScore
+                if tmpScore > maxScore:
+                    maxScore = tmpScore
+        else:
+            print "I am in the else part"
+            maxScore = currentGameState.getScore()
+        #foodList = []
+        return maxScore
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -128,6 +164,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+        print self.evaluationFunction
+        print gameState.getLegalActions(agentIndex)
+        print gameState.generateSuccessor(agentIndex, action)
+        printgameState.getNumAgents()
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
