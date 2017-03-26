@@ -164,14 +164,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-
-        #self.depth = self.depth + 1
-        print self.depth
-        #v = float("-inf")
         action = "null"
         action = self.miniMaxPlayer(0,gameState,self.depth * gameState.getNumAgents(),"STOP")[1]
         if action != "null":
-            print "inside if"
             return action
 
     def maxAgent(self,agentIndex, gameState, previousAction):
@@ -377,7 +372,24 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pacmanPosition = currentGameState.getPacmanPosition()
+    foodList = currentGameState.getFood().asList()
+    ghostStates = currentGameState.getGhostStates()
+    scaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
+    ghostPosition = currentGameState.getGhostPositions()
+    capsules = currentGameState.getCapsules()
+    numFood = currentGameState.getNumFood()
+    score = currentGameState.getScore()
+
+    # Rewards:
+    # Eaten by ghost: -500
+    # Eat a ghost: +200
+    # Step cost: -1
+    # Eat food pallet: +10
+    # Eat capsule: 0
+
+
+
 
 # Abbreviation
 better = betterEvaluationFunction
