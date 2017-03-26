@@ -174,33 +174,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
             print "inside if"
             return action
 
-        #util.raiseNotDefined()
-        #return legalMoves[chosenIndex]
-
-    """def maxAgent(gameState):
-        legalMoves = gameState.getLegalActions()
-        v = float("-inf")
-        for index, action in enumerate(legalMoves):
-             v = max(v,self.evaluationFunction(gameState.generateSuccessor(self.index, action)))
-        scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
-        bestScore = max(scores)
-        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-
-        return bestIndices[0]
-
-    def minAgent(gameState):
-        legalMoves = gameState.getLegalActions(self.index)
-        v = float("inf")
-        for index, action in enumerate(legalMoves):
-        v = max(v,self.evaluationFunction(gameState.generateSuccessor(self.index, action)))
-        scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
-        bestScore = min(scores)
-        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-
-        return bestIndices[0]"""
-        
-    def firstMaxAgent(self,agentIndex, gameState, depth,action):
-        previousAction = "nothing"
+    def maxAgent(self,agentIndex, gameState, previousAction):
         v = float("-inf")
         legalMaxMoves = gameState.getLegalActions(agentIndex)
         #if len(legalMaxMoves) != 0:
