@@ -381,16 +381,16 @@ def betterEvaluationFunction(currentGameState):
     numFood = currentGameState.getNumFood()
     score = currentGameState.getScore()
 
-    farthestFoodDistance = distanceToFarthestFood(pacmanPosition, foodList)
-    nearestFoodDistance = distanceToNearestFood(pacmanPosition, foodList)
-    nearestGhostDistance = distanceToNearestGhost(pacmanPosition, ghostPositions)
+    # farthestFoodDistance = distanceToFarthestFood(pacmanPosition, foodList)
+    # nearestFoodDistance = distanceToNearestFood(pacmanPosition, foodList)
+    # nearestGhostDistance = distanceToNearestGhost(pacmanPosition, ghostPositions)
     averageGhostDistance = averageDistanceToGhosts(pacmanPosition, ghostPositions)
     nearestScaredGhostDistance = distanceToNearestScaredGhost(pacmanPosition, ghostPositions, scaredTimes)
 
-    numCapsules = len(capsules)
-    numScaredGhosts = len(scaredTimes)
-    numGhosts = len(ghostStates)
-    numLegalActions = len(currentGameState.getLegalPacmanActions())
+    # numCapsules = len(capsules)
+    # numScaredGhosts = len(scaredTimes)
+    # numGhosts = len(ghostStates)
+    # numLegalActions = len(currentGameState.getLegalPacmanActions())
 
 
     return (score * 0.5) + averageGhostDistance - (nearestScaredGhostDistance * 2) - (numFood * 25)
