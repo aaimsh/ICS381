@@ -399,16 +399,19 @@ def betterEvaluationFunction(currentGameState):
     # wNumOfCapsules = -4
 
     # evaluation =  (wScore * score) + (wNearestGost * 1.0/nearestGhostDistance) + ( wNearestScared * nearestScaredGhostDistance) + (wNumOfCapsules * len(capsules)) + (wNumOfFood * numFood)
-    wightedFeatures = [
+    weightedFeatures = [
         0.1*score,
         2.5*1.0/(nearestFoodDistance+1),
-        20*1.0/(nearestScaredGhostDistance+1),
         10*1.0/(numFood+1),
-        20*1.0/(numCapsules+1)
-        -15*1.0/(nearestGhostDistance+1)
+        10*1.0/(numCapsules+1)
     ]
+    if nearestGhostDistance != float('inf'):
+        weightedFeatures += [-2*1.0/(nearestGhostDistance+1)]
+    if nearestScaredGhostDistance != float('inf'):
+        weightedFeatures += [20*1.0/(nearestScaredGhostDistance+1)]
 
-    evaluation = sum(wightedFeatures)
+
+    evaluation = sum(weightedFeatures)
     return evaluation
 
     # Rewards:
@@ -436,14 +439,6 @@ def distanceToNearestFood(pacmanPosition, foodList):
             minDistanceToFood = d
     return minDistanceToFood
 
-def distanceToFarthestFood(pacmanPosition, foodList):
-    maxDistanceToFood = float("-inf")
-    for food in foodList:
-        d = manhattanDistance(pacmanPosition, food)
-        if d > maxDistanceToFood:
-            maxDistanceToFood = d
-    return maxDistanceToFood
-
 def distanceToNearestGhost(pacmanPosition, ghostPositions, scaredTimes):
     minDistanceToScaredGhost = float("inf")
     for ghostPosition, scaredTimer in zip(ghostPositions, scaredTimes):
@@ -453,12 +448,20 @@ def distanceToNearestGhost(pacmanPosition, ghostPositions, scaredTimes):
                 minDistanceToScaredGhost = d
     return minDistanceToScaredGhost
 
-def averageDistanceToGhosts(pacmanPosition, ghostPositions):
-    numOfGhosts = len(ghostPositions)
-    averageDistance = 0
-    for ghostPosition in ghostPositions:
-        averageDistance += manhattanDistance(pacmanPosition, ghostPosition) / numOfGhosts
-    return averageDistance
+# def distanceToFarthestFood(pacmanPosition, foodList):
+#     maxDistanceToFood = float("-inf")
+#     for food in foodList:
+#         d = manhattanDistance(pacmanPosition, food)
+#         if d > maxDistanceToFood:
+#             maxDistanceToFood = d
+#     return maxDistanceToFood
+
+# def averageDistanceToGhosts(pacmanPosition, ghostPositions):
+#     numOfGhosts = len(ghostPositions)
+#     averageDistance = 0
+#     for ghostPosition in ghostPositions:
+#         averageDistance += manhattanDistance(pacmanPosition, ghostPosition) / numOfGhosts
+#     return averageDistance
 
 
 
