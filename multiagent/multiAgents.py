@@ -381,30 +381,34 @@ def betterEvaluationFunction(currentGameState):
     numFood = currentGameState.getNumFood()
     score = currentGameState.getScore()
 
-    farthestFoodDistance = distanceToFarthestFood(pacmanPosition, foodList)
+    # farthestFoodDistance = distanceToFarthestFood(pacmanPosition, foodList)
+    # averageGhostDistance = averageDistanceToGhosts(pacmanPosition, ghostPositions)
     nearestFoodDistance = distanceToNearestFood(pacmanPosition, foodList)
-    nearestGhostDistance = distanceToNearestGhost(pacmanPosition, ghostPositions)
-    averageGhostDistance = averageDistanceToGhosts(pacmanPosition, ghostPositions)
+    nearestGhostDistance = distanceToNearestGhost(pacmanPosition, ghostPositions, scaredTimes)
     nearestScaredGhostDistance = distanceToNearestScaredGhost(pacmanPosition, ghostPositions, scaredTimes)
 
-    # numCapsules = len(capsules)
     # numScaredGhosts = len(scaredTimes)
     # numGhosts = len(ghostStates)
-    # numLegalActions = len(currentGameState.getLegalPacmanActions())
-    #evaluation = score * 0.5
-    wScore         = 1
+    numCapsules = len(capsules)
+    numLegalActions = len(currentGameState.getLegalPacmanActions())
+    # wScore         = 1
+    # wNearestGost   = -2
+    # wNearestScared = -5
+    # wNearestFood   = -1.5
+    # wNumOfFood     = -4
+    # wNumOfCapsules = -4
 
-    wNearestGost   = -2
-    wNearestScared = -2
+    # evaluation =  (wScore * score) + (wNearestGost * 1.0/nearestGhostDistance) + ( wNearestScared * nearestScaredGhostDistance) + (wNumOfCapsules * len(capsules)) + (wNumOfFood * numFood)
+    wightedFeatures = [
+        0.1*score,
+        2.5*1.0/(nearestFoodDistance+1),
+        20*1.0/(nearestScaredGhostDistance+1),
+        10*1.0/(numFood+1),
+        20*1.0/(numCapsules+1)
+        -15*1.0/(nearestGhostDistance+1)
+    ]
 
-    wNearestFood   = -1.5
-    wNumOfFood     = -4
-
-    wNumOfCapsules = -20
-
-
-#    print farthestFoodDistance
-    evaluation =  (wScore * score) + (wNearestGost * 1.0/nearestGhostDistance) + ( wNearestScared * nearestScaredGhostDistance) + (wNumOfCapsules * len(capsules)) + (wNumOfFood * numFood)
+    evaluation = sum(wightedFeatures)
     return evaluation
 
     # Rewards:
@@ -417,9 +421,10 @@ def betterEvaluationFunction(currentGameState):
 def distanceToNearestScaredGhost(pacmanPosition, ghostPositions, scaredTimes):
     minDistanceToScaredGhost = float("inf")
     for ghostPosition, scaredTimer in zip(ghostPositions, scaredTimes):
-        d = manhattanDistance(pacmanPosition, ghostPosition)
-        if d < minDistanceToScaredGhost:
-            minDistanceToScaredGhost = d
+        if scaredTimer > 0:
+            d = manhattanDistance(pacmanPosition, ghostPosition)
+            if d < minDistanceToScaredGhost:
+                minDistanceToScaredGhost = d
     return minDistanceToScaredGhost
 
 
@@ -439,13 +444,14 @@ def distanceToFarthestFood(pacmanPosition, foodList):
             maxDistanceToFood = d
     return maxDistanceToFood
 
-def distanceToNearestGhost(pacmanPosition, ghostPositions):
-    minDistanceToGhost = float("inf")
-    for ghostPosition in ghostPositions:
-        d = manhattanDistance(pacmanPosition, ghostPosition)
-        if d < minDistanceToGhost:
-            minDistanceToGhost = d
-    return minDistanceToGhost + 1
+def distanceToNearestGhost(pacmanPosition, ghostPositions, scaredTimes):
+    minDistanceToScaredGhost = float("inf")
+    for ghostPosition, scaredTimer in zip(ghostPositions, scaredTimes):
+        if scaredTimer <= 0:
+            d = manhattanDistance(pacmanPosition, ghostPosition)
+            if d < minDistanceToScaredGhost:
+                minDistanceToScaredGhost = d
+    return minDistanceToScaredGhost
 
 def averageDistanceToGhosts(pacmanPosition, ghostPositions):
     numOfGhosts = len(ghostPositions)
