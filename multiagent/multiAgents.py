@@ -406,7 +406,7 @@ def betterEvaluationFunction(currentGameState):
         10*1.0/(numCapsules+1)
     ]
     if nearestGhostDistance != float('inf'):
-        weightedFeatures += [-2*1.0/(nearestGhostDistance+1)]
+        weightedFeatures += [-1*1.0/(nearestGhostDistance+1)]
     if nearestScaredGhostDistance != float('inf'):
         weightedFeatures += [20*1.0/(nearestScaredGhostDistance+1)]
 
